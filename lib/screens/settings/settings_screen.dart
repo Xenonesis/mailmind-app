@@ -13,6 +13,13 @@ class SettingsScreen extends ConsumerWidget {
     final settings = ref.watch(settingsProvider);
     final theme = Theme.of(context);
 
+    // Load notification settings when the screen is built and user is authenticated
+    final authState = ref.watch(authStateProvider);
+    if (authState.isAuthenticated) {
+      // Load notification settings if not already loaded
+      ref.read(notificationSettingsProvider.notifier).loadSettings();
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings'),

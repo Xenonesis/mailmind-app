@@ -78,6 +78,30 @@ static const String baseUrl = 'http://localhost:3000/api';
 - **Response**: Authentication token and user information
 - **Success Response**: `200 OK`
 
+### Google OAuth Token Verification
+- **POST** `/auth/google/token`
+- **Description**: Verify Google ID token and authenticate user
+- **Authentication**: Not required
+- **Request Body**:
+  ```json
+  {
+    "idToken": "google_id_token",
+    "accessToken": "google_access_token"
+  }
+  ```
+- **Response**: 
+  ```json
+  {
+    "access_token": "jwt_token",
+    "user": {
+      "id": "user_id",
+      "email": "user@example.com",
+      "name": "User Name"
+    }
+  }
+  ```
+- **Success Response**: `200 OK`
+
 ## User Management Endpoints
 *All endpoints require Authorization: Bearer token*
 

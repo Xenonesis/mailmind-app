@@ -103,25 +103,14 @@ class AuthNotifier extends StateNotifier<AuthState> {
     try {
       state = state.copyWith(isLoading: true, error: null);
       
-      // This would typically involve opening a web view or using google_sign_in
-      // For now, we'll just get the auth URL
-      final authUrl = await _authRepository.getGoogleAuthUrl();
-      
-      // In a real implementation, you would:
-      // 1. Open the auth URL in a web view
-      // 2. Handle the callback with the authorization code
-      // 3. Call handleGoogleCallback with the code
-      
-      // For demo purposes, we'll just set an error
-      state = state.copyWith(
-        isLoading: false,
-        error: 'Google OAuth not fully implemented yet',
-      );
+      final authResponse = await _authRepository.loginWithGoogle();
+      state = AuthState.authenticated(authResponse.user);
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
         error: e.toString(),
       );
+      rethrow;
     }
   }
 

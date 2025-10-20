@@ -1,4 +1,5 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'dart:convert';
 import '../api/dio_client.dart';
 import '../api/endpoints.dart';
@@ -53,7 +54,41 @@ class AuthRepository {
     }
   }
 
-  // Google OAuth login
+  // Google OAuth login - Complete implementation
+  Future<AuthResponse> loginWithGoogle() async {
+    try {
+      final GoogleSignIn googleSignIn = GoogleSignIn(
+        scopes: ['email', 'profile'],
+      );
+
+      // Sign out first to ensure fresh login
+      await googleSignIn.signOut();
+      
+      final GoogleSignInAccount? account = await googleSignIn.signIn();
+      if (account == null) {
+        throw AuthException('Google sign-in was cancelled');
+      }
+
+      final GoogleSignInAuthentication auth = await account.authentication;
+      
+      // Send the ID token to your backend for verification
+      final response = await DioClient.post(
+        '/auth/google/token', // New endpoint for token verification
+        data: {
+          'idToken': auth.idToken,
+          'accessToken': auth.accessToken,
+        },
+      );
+
+      final authResponse = AuthResponse.fromJson(response.data);
+      await _storeAuthData(authResponse);
+      return authResponse;
+    } catch (e) {
+      throw _handleAuthError(e);
+    }
+  }
+
+  // Google OAuth login using web flow (fallback)
   Future<String> getGoogleAuthUrl() async {
     try {
       final response = await DioClient.get(ApiEndpoints.googleAuth);

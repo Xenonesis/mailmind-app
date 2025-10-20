@@ -7,6 +7,7 @@ class ApiEndpoints {
   static const String login = '/auth/login';
   static const String googleAuth = '/auth/google';
   static const String googleCallback = '/auth/google/callback';
+  static const String googleToken = '/auth/google/token'; // New endpoint for token verification
   
   // User management endpoints
   static const String userProfile = '/user/profile';

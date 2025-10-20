@@ -6,6 +6,7 @@ import 'models/email_model.dart';
 import 'models/user_settings.dart';
 import 'theme/app_theme.dart';
 import 'providers/settings_provider.dart';
+import 'providers/auth_provider.dart'; // Add this import
 import 'screens/splash_screen.dart';
 
 void main() async {
@@ -36,7 +37,11 @@ class MailMindApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDarkMode = ref.watch(themeModeProvider);
+    // Only watch theme mode if user is authenticated to avoid 401 errors
+    final authState = ref.watch(authStateProvider);
+    final isDarkMode = authState.isAuthenticated 
+        ? ref.watch(themeModeProvider) 
+        : false; // Default to light mode when not authenticated
     
     return MaterialApp(
       title: 'MailMind',

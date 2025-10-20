@@ -46,7 +46,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     
     // Check authentication status after animation
     Future.delayed(const Duration(milliseconds: 2500), () {
-      _checkAuthAndNavigate();
+      if (mounted) {
+        _checkAuthAndNavigate();
+      }
     });
   }
 
@@ -57,18 +59,21 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   }
 
   void _checkAuthAndNavigate() {
+    // Make sure the widget is still mounted before accessing ref
+    if (!mounted) return;
+
     final authState = ref.read(authStateProvider);
-    
-    if (mounted) {
-      if (authState.isAuthenticated) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
-        );
-      } else {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const LoginScreen()),
-        );
-      }
+
+    if (authState.isAuthenticated) {
+      if (!mounted) return;
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
+    } else {
+      if (!mounted) return;
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+      );
     }
   }
 
@@ -76,7 +81,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   Widget build(BuildContext context) {
     // Listen to auth state changes
     ref.listen<AuthState>(authStateProvider, (previous, next) {
-      if (!next.isLoading) {
+      if (!next.isLoading && mounted) {
         // Auth check is complete, navigate based on state
         if (next.isAuthenticated) {
           Navigator.of(context).pushReplacement(

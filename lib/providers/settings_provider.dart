@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../repositories/user_repository.dart';
 import '../models/user_settings.dart';
+import 'auth_provider.dart'; // Add this import
 
 // User repository provider
 final userRepositoryProvider = Provider<UserRepository>((ref) {
@@ -11,7 +12,8 @@ final userRepositoryProvider = Provider<UserRepository>((ref) {
 // Settings provider
 final settingsProvider = StateNotifierProvider<SettingsNotifier, UserSettings>((ref) {
   final userRepository = ref.watch(userRepositoryProvider);
-  return SettingsNotifier(userRepository);
+  final authState = ref.watch(authStateProvider);
+  return SettingsNotifier(userRepository, authState);
 });
 
 // Theme mode provider (derived from settings)
@@ -28,9 +30,10 @@ final notificationSettingsProvider = StateNotifierProvider<NotificationSettingsN
 
 class SettingsNotifier extends StateNotifier<UserSettings> {
   final UserRepository _userRepository;
+  final AuthState _authState;
   SharedPreferences? _prefs;
 
-  SettingsNotifier(this._userRepository) : super(UserSettings()) {
+  SettingsNotifier(this._userRepository, this._authState) : super(UserSettings()) {
     _initializeSettings();
   }
 
@@ -42,13 +45,16 @@ class SettingsNotifier extends StateNotifier<UserSettings> {
       final localSettings = _loadLocalSettings();
       state = localSettings;
       
-      // Then try to load from server
-      try {
-        final serverSettings = await _userRepository.getUserSettings();
-        state = serverSettings;
-        await _saveLocalSettings(serverSettings);
-      } catch (e) {
-        // If server fails, keep local settings
+      // Only try to load from server if user is authenticated
+      if (_authState.isAuthenticated) {
+        try {
+          final serverSettings = await _userRepository.getUserSettings();
+          state = serverSettings;
+          await _saveLocalSettings(serverSettings);
+        } catch (e) {
+          // If server fails, keep local settings
+          print('Failed to load server settings: $e');
+        }
       }
     } catch (e) {
       // Use default settings if everything fails
@@ -147,12 +153,14 @@ class SettingsNotifier extends StateNotifier<UserSettings> {
       state = newSettings;
       await _saveLocalSettings(newSettings);
       
-      // Try to update server
-      try {
-        await _userRepository.updateUserSettings(newSettings);
-      } catch (e) {
-        // If server update fails, keep local changes
-        // You might want to implement a sync mechanism later
+      // Try to update server only if authenticated
+      if (_authState.isAuthenticated) {
+        try {
+          await _userRepository.updateUserSettings(newSettings);
+        } catch (e) {
+          // If server update fails, keep local changes
+          print('Failed to update server settings: $e');
+        }
       }
     } catch (e) {
       // If local save fails, revert state
@@ -186,7 +194,8 @@ class NotificationSettingsNotifier extends StateNotifier<Map<String, bool>> {
   final UserRepository _userRepository;
 
   NotificationSettingsNotifier(this._userRepository) : super({}) {
-    _loadNotificationSettings();
+    // Don't automatically load notification settings on initialization
+    // They will be loaded when needed and user is authenticated
   }
 
   Future<void> _loadNotificationSettings() async {
@@ -200,6 +209,11 @@ class NotificationSettingsNotifier extends StateNotifier<Map<String, bool>> {
         'enablePushNotifications': true,
       };
     }
+  }
+
+  // Public method to load settings when needed
+  Future<void> loadSettings() async {
+    await _loadNotificationSettings();
   }
 
   Future<void> updateNotificationSettings({

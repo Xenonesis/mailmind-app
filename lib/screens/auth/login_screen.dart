@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import '../../providers/auth_provider.dart';
-import '../../theme/app_theme.dart';
 import 'signup_screen.dart';
 import '../home/home_screen.dart';
 
@@ -63,33 +61,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final GoogleSignIn googleSignIn = GoogleSignIn(
-        scopes: ['email', 'profile'],
-      );
-
-      final GoogleSignInAccount? account = await googleSignIn.signIn();
-      if (account == null) {
-        setState(() => _isLoading = false);
-        return;
-      }
-
-      final GoogleSignInAuthentication auth = await account.authentication;
+      await ref.read(authStateProvider.notifier).loginWithGoogle();
       
-      // In a real implementation, you would send the auth code to your backend
-      // For now, we'll show a message that Google OAuth needs backend integration
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Google OAuth requires backend integration'),
-            backgroundColor: Colors.orange,
-          ),
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Google Sign-In failed: ${e.toString()}'),
+            content: Text(e.toString().replaceAll('AuthException: ', '')),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -251,13 +234,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     // Google Sign-In Button
                     OutlinedButton.icon(
                       onPressed: _isLoading ? null : _handleGoogleSignIn,
-                      icon: Image.asset(
-                        'assets/images/google_logo.png',
-                        height: 20,
-                        width: 20,
-                        errorBuilder: (context, error, stackTrace) {
-                          return const Icon(Icons.g_mobiledata, size: 20);
-                        },
+                      icon: const Icon(
+                        Icons.g_mobiledata,
+                        size: 20,
                       ),
                       label: const Text('Continue with Google'),
                       style: OutlinedButton.styleFrom(
