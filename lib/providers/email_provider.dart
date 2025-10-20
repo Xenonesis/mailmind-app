@@ -87,8 +87,8 @@ class EmailListNotifier extends StateNotifier<EmailListState> {
     }
   }
 
-  // Mark email as read
-  Future<void> markAsRead(String emailId) async {
+  // Mark email as read/unread
+  Future<void> markAsRead(String emailId, [bool isRead = true]) async {
     try {
       await _emailRepository.markAsRead(emailId);
       
@@ -107,7 +107,7 @@ class EmailListNotifier extends StateNotifier<EmailListState> {
             category: email.category,
             priority: email.priority,
             summary: email.summary,
-            isRead: true,
+            isRead: isRead,
             isImportant: email.isImportant,
             attachments: email.attachments,
             threadId: email.threadId,

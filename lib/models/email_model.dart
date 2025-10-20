@@ -118,6 +118,10 @@ class Email extends HiveObject {
         : cleanBody;
   }
 
+  bool get hasAttachments {
+    return attachments != null && attachments!.isNotEmpty;
+  }
+
   String get formattedDate {
     final now = DateTime.now();
     final difference = now.difference(receivedAt);

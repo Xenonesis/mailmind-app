@@ -114,6 +114,16 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
+  // Alias for Google sign-in (used by login screen)
+  Future<void> signInWithGoogle() async {
+    return await loginWithGoogle();
+  }
+
+  // Alias for email/password signup (used by signup screen)
+  Future<void> signUpWithEmailAndPassword(String email, String password, String name) async {
+    return await register(email: email, password: password, name: name);
+  }
+
   // Handle Google OAuth callback
   Future<void> handleGoogleCallback(String code) async {
     try {
