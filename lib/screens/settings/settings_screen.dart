@@ -33,9 +33,11 @@ class SettingsScreen extends ConsumerWidget {
                       radius: 30,
                       backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
                       child: Text(
-                        currentUser?.firstName.isNotEmpty == true
-                            ? currentUser!.firstName[0].toUpperCase()
-                            : 'U',
+                        (currentUser?.name.isNotEmpty == true
+                            ? currentUser!.name[0].toUpperCase()
+                            : currentUser?.fullName.isNotEmpty == true
+                                ? currentUser!.fullName[0].toUpperCase()
+                                : 'U'),
                         style: TextStyle(
                           color: theme.colorScheme.primary,
                           fontSize: 24,
@@ -51,11 +53,11 @@ class SettingsScreen extends ConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            currentUser?.fullName ?? 'User',
-                            style: theme.textTheme.titleLarge?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
+                          currentUser?.fullName ?? 'User',
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
                           ),
+                        ),
                           const SizedBox(height: 4),
                           Text(
                             currentUser?.email ?? '',

@@ -12,8 +12,7 @@ class SignupScreen extends ConsumerStatefulWidget {
 
 class _SignupScreenState extends ConsumerState<SignupScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _firstNameController = TextEditingController();
-  final _lastNameController = TextEditingController();
+  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
@@ -24,8 +23,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
 
   @override
   void dispose() {
-    _firstNameController.dispose();
-    _lastNameController.dispose();
+    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
@@ -51,8 +49,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
       await ref.read(authStateProvider.notifier).register(
         email: _emailController.text.trim(),
         password: _passwordController.text,
-        firstName: _firstNameController.text.trim(),
-        lastName: _lastNameController.text.trim(),
+        name: _nameController.text.trim(),
       );
 
       if (mounted) {
@@ -112,45 +109,22 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                 
                 const SizedBox(height: 32),
                 
-                // First Name Field
+                // Name Field
                 TextFormField(
-                  controller: _firstNameController,
+                  controller: _nameController,
                   textInputAction: TextInputAction.next,
                   textCapitalization: TextCapitalization.words,
                   decoration: const InputDecoration(
-                    labelText: 'First Name',
-                    hintText: 'Enter your first name',
+                    labelText: 'Full Name',
+                    hintText: 'Enter your full name',
                     prefixIcon: Icon(Icons.person_outlined),
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return 'Please enter your first name';
+                      return 'Please enter your full name';
                     }
                     if (value.trim().length < 2) {
-                      return 'First name must be at least 2 characters';
-                    }
-                    return null;
-                  },
-                ),
-                
-                const SizedBox(height: 16),
-                
-                // Last Name Field
-                TextFormField(
-                  controller: _lastNameController,
-                  textInputAction: TextInputAction.next,
-                  textCapitalization: TextCapitalization.words,
-                  decoration: const InputDecoration(
-                    labelText: 'Last Name',
-                    hintText: 'Enter your last name',
-                    prefixIcon: Icon(Icons.person_outlined),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Please enter your last name';
-                    }
-                    if (value.trim().length < 2) {
-                      return 'Last name must be at least 2 characters';
+                      return 'Name must be at least 2 characters';
                     }
                     return null;
                   },

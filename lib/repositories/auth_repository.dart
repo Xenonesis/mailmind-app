@@ -11,8 +11,7 @@ class AuthRepository {
   Future<AuthResponse> register({
     required String email,
     required String password,
-    required String firstName,
-    required String lastName,
+    required String name,
   }) async {
     try {
       final response = await DioClient.post(
@@ -20,8 +19,7 @@ class AuthRepository {
         data: {
           'email': email,
           'password': password,
-          'firstName': firstName,
-          'lastName': lastName,
+          'name': name,
         },
       );
 

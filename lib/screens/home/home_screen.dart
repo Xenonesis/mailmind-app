@@ -102,11 +102,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Hello, ${currentUser?.firstName ?? 'User'}!',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
+                  'Hello, ${currentUser?.name ?? currentUser?.fullName ?? 'User'}!',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
+                ),
                   Text(
                     'Inbox',
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(

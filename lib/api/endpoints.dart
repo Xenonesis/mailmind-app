@@ -1,6 +1,6 @@
 class ApiEndpoints {
-  // Base URL - Update this with your actual backend URL
-  static const String baseUrl = 'https://your-backend.vercel.app/api/v1';
+  // Base URL - Updated to match the backend server
+  static const String baseUrl = 'http://localhost:3000/api';
   
   // Authentication endpoints
   static const String register = '/auth/register';

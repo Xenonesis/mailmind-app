@@ -224,6 +224,10 @@ For support, email support@mailmind.app or create an issue in the repository.
 - [ ] Desktop version (Flutter Desktop)
 - [ ] Web version (Flutter Web)
 
+## API Status Check
+
+A simple test script (`api_test.dart`) has been created to verify the API endpoints. Running this script shows that the default backend URL (`https://your-backend.vercel.app/api/v1`) returns 404 errors, indicating that the backend service is not currently deployed or accessible. You will need to deploy a backend service that implements the API endpoints as documented in `endpoints.md` before the app can function properly.
+
 ---
 
 **MailMind** - Making email management smarter and simpler! 📧✨

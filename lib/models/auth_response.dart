@@ -13,7 +13,7 @@ class AuthResponse {
 
   factory AuthResponse.fromJson(Map<String, dynamic> json) {
     return AuthResponse(
-      token: json['token'] ?? json['access_token'] ?? '',
+      token: json['access_token'] ?? json['token'] ?? '',
       user: User.fromJson(json['user'] ?? {}),
       refreshToken: json['refreshToken'] ?? json['refresh_token'],
       expiresAt: json['expiresAt'] != null 
@@ -24,7 +24,7 @@ class AuthResponse {
 
   Map<String, dynamic> toJson() {
     return {
-      'token': token,
+      'access_token': token,
       'user': user.toJson(),
       'refreshToken': refreshToken,
       'expiresAt': expiresAt?.toIso8601String(),
@@ -40,15 +40,17 @@ class AuthResponse {
 class User {
   final String id;
   final String email;
-  final String firstName;
-  final String lastName;
+  final String name;
+  final String? firstName;
+  final String? lastName;
   final DateTime? createdAt;
 
   User({
     required this.id,
     required this.email,
-    required this.firstName,
-    required this.lastName,
+    required this.name,
+    this.firstName,
+    this.lastName,
     this.createdAt,
   });
 
@@ -56,8 +58,9 @@ class User {
     return User(
       id: json['id'] ?? '',
       email: json['email'] ?? '',
-      firstName: json['firstName'] ?? '',
-      lastName: json['lastName'] ?? '',
+      name: json['name'] ?? '',
+      firstName: json['firstName'] ?? json['first_name'],
+      lastName: json['lastName'] ?? json['last_name'],
       createdAt: json['createdAt'] != null 
           ? DateTime.parse(json['createdAt']) 
           : null,
@@ -68,16 +71,17 @@ class User {
     return {
       'id': id,
       'email': email,
+      'name': name,
       'firstName': firstName,
       'lastName': lastName,
       'createdAt': createdAt?.toIso8601String(),
     };
   }
 
-  String get fullName => '$firstName $lastName';
+  String get fullName => name.isNotEmpty ? name : '${firstName ?? ''} ${lastName ?? ''}'.trim();
 
   @override
   String toString() {
-    return 'User(id: $id, email: $email, firstName: $firstName, lastName: $lastName)';
+    return 'User(id: $id, email: $email, name: $name)';
   }
 }
